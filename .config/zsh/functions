@@ -1,0 +1,29 @@
+#!/bin/sh
+
+function source_file() {
+	if [ -f "$ZDOTDIR/$1" ]; then
+		source "$ZDOTDIR/$1"
+	else
+		echo "No file $1 was found, dummy!"
+	fi
+}
+
+function source_files() {
+	files=("$@")
+	for file in "${files[@]}"; do
+		source_file $file
+	done
+}
+
+function add_plugin() {
+	PLUGIN_NAME=$(echo $1 | cut -d "/" -f 2)
+	PLUGIN_DIRECTORY="$ZDOTDIR/plugins/$PLUGIN_NAME"
+	if [ -d "$PLUGIN_DIRECTORY" ]; then
+		source_file "plugins/$PLUGIN_NAME/$PLUGIN_NAME.plugin.zsh" || \
+		source_file "plugins/$PLUGIN_NAME/$PLUGIN_NAME.zsh"
+	else
+		echo "Plugin $PLUGIN_NAME not found. Cloning git repo."
+		git clone "https://github.com/$1.git" "$PLUGIN_DIRECTORY"
+	fi
+}
+
