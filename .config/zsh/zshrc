@@ -1,0 +1,16 @@
+export ZDOTDIR=$HOME/.config/zsh
+
+source "$ZDOTDIR/functions"
+
+files=("prompt" "aliases")
+
+source_files "${files[@]}"
+
+add_plugin "zsh-users/zsh-autosuggestions"
+add_plugin "zsh-users/zsh-syntax-highlighting"
+
+export PATH=$HOME/.fnm:$PATH
+eval "`fnm env`"
+
+export PATH=$HOME/.local/bin:$PATH
+alias config='/usr/bin/git --git-dir=/home/gustavo/.cfg/ --work-tree=/home/gustavo'
