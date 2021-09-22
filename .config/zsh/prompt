@@ -1,0 +1,39 @@
+autoload -Uz vcs_info
+autoload -U colors && colors
+
+precmd() { vcs_info }
+setopt prompt_subst
+
++vi-git-untracked(){
+    if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
+        git status --porcelain | grep -q '^?? ' 2> /dev/null ; then
+        # This will show the marker if there are any untracked files in repo.
+        # If instead you want to show the marker only if there are untracked
+        # files in $PWD, use:
+        #[[ -n $(git ls-files --others --exclude-standard) ]] ; then
+        hook_com[staged]+='T'
+    fi
+}
+
+# git: Show marker (T) if there are untracked files in repository
+zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
+
+# Check the repository for changes so they can be used in %u/%c
+zstyle ':vcs_info:*' check-for-changes true
+
+zstyle ':vcs_info:git:*' formats '::%F{240}%b%f'
+zstyle ':vcs_info:*' enable git
+
+messages=("eita porra." "ce ta doido." "para com isso.")
+
+function get_error_message() {
+	messages=("$@")
+	index=$((1 + $RANDOM % 3))
+	echo "${messages[$index]}"
+}
+
+PROMPT=" %F{38}%~%f"
+PROMPT+="\$vcs_info_msg_0_ "
+PROMPT+="%# "
+RPROMPT="%(?..%F{9}$(get_error_message "${messages[@]}"))"
+
